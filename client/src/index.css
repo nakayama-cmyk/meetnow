@@ -1,0 +1,768 @@
+/* ===== リセット & 変数 ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #111827;
+  --surface: #1f2937;
+  --surface2: #374151;
+  --border: #374151;
+  --primary: #6366f1;
+  --primary-h: #818cf8;
+  --danger: #ef4444;
+  --danger-h: #f87171;
+  --success: #22c55e;
+  --text: #f9fafb;
+  --text2: #9ca3af;
+  --radius: 8px;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ===== ボタン ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn-primary   { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-h); }
+.btn-secondary { background: var(--surface2); color: var(--text); }
+.btn-secondary:hover:not(:disabled) { background: #4b5563; }
+.btn-danger    { background: var(--danger); color: #fff; padding: 8px 20px; }
+.btn-danger:hover:not(:disabled) { background: var(--danger-h); }
+.btn-ghost     { background: transparent; color: var(--text2); }
+.btn-ghost:hover:not(:disabled) { background: var(--surface2); color: var(--text); }
+.btn-full      { width: 100%; justify-content: center; }
+.btn-sm        { padding: 4px 10px; font-size: 13px; }
+
+/* ===== ホームページ ===== */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+  padding: 16px;
+}
+
+.home-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+.logo-icon { font-size: 36px; }
+.logo h1   { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+
+.tagline {
+  text-align: center;
+  color: var(--text2);
+  font-size: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label { font-size: 13px; color: var(--text2); }
+
+input[type="text"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type="text"]:focus { border-color: var(--primary); }
+input[type="text"]::placeholder { color: var(--text2); }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text2);
+  font-size: 13px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.join-row {
+  display: flex;
+  gap: 8px;
+}
+.join-row input { flex: 1; }
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.features span {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* ===== ルームページ ===== */
+.room-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.room-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 8px;
+}
+
+/* ===== ビデオグリッド ===== */
+.video-grid-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+}
+
+.video-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols, 1), 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.participant-tile {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  aspect-ratio: 16/9;
+}
+
+.participant-tile.speaking {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px var(--success);
+}
+
+.participant-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+}
+.avatar span {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tile-label {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  padding: 2px 8px;
+  max-width: calc(100% - 12px);
+}
+.tile-name {
+  font-size: 12px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mic-off-icon { font-size: 11px; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px;
+  font-size: 14px;
+  color: var(--text2);
+}
+
+.participant-count { margin-left: 8px; }
+
+.empty-room {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text2);
+}
+.empty-room p  { font-size: 16px; }
+.empty-room small { font-size: 13px; }
+
+/* ===== コントロールバー ===== */
+.control-bar {
+  height: 72px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.ctrl-left  { display: flex; align-items: center; gap: 8px; min-width: 200px; }
+.ctrl-center { display: flex; align-items: center; gap: 4px; }
+.ctrl-right { display: flex; align-items: center; justify-content: flex-end; min-width: 200px; }
+
+.room-id-display {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+  min-width: 52px;
+}
+.ctrl-btn:hover  { background: var(--surface2); }
+.ctrl-btn.active { background: var(--surface2); color: var(--primary); }
+.ctrl-icon { font-size: 20px; line-height: 1; }
+.ctrl-label { font-size: 10px; color: var(--text2); white-space: nowrap; }
+.ctrl-btn.active .ctrl-label { color: var(--primary); }
+
+.ctrl-badge {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--danger);
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ===== サイドパネル（チャット・文字起こし）===== */
+.side-panel {
+  width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.panel-header h3 { font-size: 15px; font-weight: 600; }
+.panel-actions { display: flex; gap: 4px; }
+
+/* ===== チャット ===== */
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-msg {
+  text-align: center;
+  color: var(--text2);
+  font-size: 13px;
+  margin-top: 24px;
+}
+.empty-msg small { display: block; margin-top: 6px; font-size: 12px; line-height: 1.5; }
+
+.message {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  max-width: 100%;
+}
+.message-local { background: #1e1b4b; }
+
+.message-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.message-sender { font-size: 12px; font-weight: 600; color: var(--primary-h); }
+.message-time   { font-size: 11px; color: var(--text2); }
+.message-text   { font-size: 14px; line-height: 1.5; word-break: break-word; }
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.chat-input input { flex: 1; }
+
+/* ===== 文字起こし ===== */
+.transcript-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transcript-entry {
+  border-left: 3px solid var(--primary);
+  padding-left: 10px;
+}
+
+/* 認識中（interim）エントリ */
+.transcript-interim {
+  border-left-color: var(--text2);
+  opacity: 0.6;
+}
+.transcript-interim .transcript-text {
+  font-style: italic;
+}
+
+.transcript-meta {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+.transcript-speaker { font-size: 12px; font-weight: 600; color: var(--primary-h); }
+.transcript-time    { font-size: 11px; color: var(--text2); }
+.transcript-text    { font-size: 14px; line-height: 1.6; }
+
+/* ===== 画面共有レイアウト ===== */
+/* 画面共有フルエリア（カメラはフロートオーバーレイ） */
+.screenshare-fullarea {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.screenshare-fullarea > .participant-tile {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset !important;
+  border-radius: var(--radius);
+  position: relative; /* float-cams は fixed なので干渉しない */
+}
+
+.screenshare-fullarea > .participant-tile .participant-video {
+  object-fit: contain !important;
+}
+
+/* 右上フロートカメラ群（画面共有中は画面外上部に固定） */
+.float-cams {
+  position: fixed;
+  top: -90px;   /* 通常は画面外（上に隠れている） */
+  right: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  z-index: 9999;
+  transition: top 0.3s ease;
+}
+
+/* ホバーで少し出てくる */
+.float-cams:hover {
+  top: 8px;
+}
+
+.float-cams .participant-tile {
+  width: 160px;
+  aspect-ratio: 16/9 !important;
+  border-radius: var(--radius);
+  border: 2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.screenshare-layout {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+  align-items: stretch;
+}
+
+.screenshare-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* 内部を flex にして participant-tile を 100% 伸ばす */
+  display: flex;
+  flex-direction: column;
+}
+
+.screenshare-main .participant-tile {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: unset !important;
+  border-radius: var(--radius);
+}
+
+/* VideoTrack の video 要素を確実に親いっぱいにする */
+.screenshare-main .participant-video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.screenshare-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.tile-small {
+  aspect-ratio: 16/9 !important;
+  flex-shrink: 0;
+}
+
+.tile-small .avatar span {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+/* 自分が共有中のメイン表示 */
+.local-sharing-main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #1e1b4b;
+  padding: 24px;
+}
+.local-sharing-icon  { font-size: 48px; }
+.local-sharing-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.local-sharing-sub   { font-size: 14px; color: var(--text2); }
+.local-sharing-tip   {
+  font-size: 12px;
+  color: var(--primary-h);
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+.local-sharing-thumb {
+  width: 240px;
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.local-sharing-thumb .participant-tile {
+  aspect-ratio: 16/9;
+}
+
+/* 自分の共有中ラベル（右下オーバーレイ） */
+.local-share-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* ===== デバイス設定画面 ===== */
+.device-setup-overlay {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.device-setup-header {
+  padding: 20px 32px 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+.device-setup-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* 2カラムレイアウト */
+.device-setup-body {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  padding: 20px 32px 24px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 左: プレビュー（大） */
+.device-preview-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.device-preview {
+  flex: 1;
+  min-height: 0;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.device-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.device-preview-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-size: 15px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 右: 設定パネル */
+.device-setup-card {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.device-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.device-field label {
+  font-size: 13px;
+  color: var(--text2);
+}
+.device-field select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+.device-field select:focus { border-color: var(--primary); }
+
+/* ===== OBS 連携ボタン ===== */
+.obs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.obs-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #6366f1;
+  border-radius: var(--radius);
+  background: rgba(99,102,241,0.1);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.obs-btn:hover:not(:disabled) {
+  background: rgba(99,102,241,0.25);
+}
+.obs-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.obs-btn-ok {
+  border-color: var(--success);
+  background: rgba(34,197,94,0.12);
+  color: var(--success);
+}
+.obs-btn-error {
+  border-color: var(--danger);
+  background: rgba(239,68,68,0.1);
+  color: var(--danger-h);
+}
+
+.obs-msg {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.obs-msg.ok    { color: var(--success); }
+.obs-msg.error { color: var(--danger-h); }
+.obs-msg.loading { color: var(--text2); }
+
+.obs-hint {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.obs-spin { display: inline-block; animation: spin 1s linear infinite; }
+
+/* ===== スクロールバー ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+/* ===== 接続中・エラー ===== */
+.connecting-page, .error-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text2);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
