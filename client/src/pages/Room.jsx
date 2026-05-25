@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
-import { AccessToken } from 'livekit-server-sdk';
 import VideoGrid from '../components/VideoGrid.jsx';
 import ControlBar from '../components/ControlBar.jsx';
 import ChatPanel from '../components/ChatPanel.jsx';
@@ -10,7 +9,8 @@ import DeviceSetup from '../components/DeviceSetup.jsx';
 import { useRecording } from '../hooks/useRecording.js';
 import { useTranscription } from '../hooks/useTranscription.js';
 
-// クライアント側でトークンを生成（VITE_LIVEKIT_* が設定されている場合）
+// ブラウザネイティブ Web Crypto API で LiveKit JWT を生成
+// livekit-server-sdk は Node.js 専用のため使用しない
 async function generateTokenClientSide(room, username) {
   const host   = import.meta.env.VITE_LIVEKIT_HOST;
   const key    = import.meta.env.VITE_LIVEKIT_API_KEY;
@@ -18,10 +18,42 @@ async function generateTokenClientSide(room, username) {
   if (!host || !key || !secret) return null;
 
   const identity = `${username}_${Date.now()}`;
-  const at = new AccessToken(key, secret, { identity, name: username, ttl: '4h' });
-  at.addGrant({ roomJoin: true, room, canPublish: true, canSubscribe: true, canPublishData: true });
-  const jwt = await at.toJwt();
-  return { token: jwt, url: host };
+  const now = Math.floor(Date.now() / 1000);
+
+  // Base64url エンコード
+  const b64url = (obj) =>
+    btoa(unescape(encodeURIComponent(JSON.stringify(obj))))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  const header  = b64url({ alg: 'HS256', typ: 'JWT' });
+  const payload = b64url({
+    iss: key,
+    sub: identity,
+    iat: now,
+    nbf: now,
+    exp: now + 14400, // 4時間
+    name: username,
+    video: {
+      roomJoin: true,
+      room,
+      canPublish: true,
+      canSubscribe: true,
+      canPublishData: true,
+    },
+  });
+
+  const sigInput = `${header}.${payload}`;
+  const enc = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw', enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false, ['sign']
+  );
+  const sigBytes = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(sigInput));
+  const sig = btoa(String.fromCharCode(...new Uint8Array(sigBytes)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  return { token: `${sigInput}.${sig}`, url: host };
 }
 
 function RoomContent({ roomId }) {
@@ -108,7 +140,7 @@ export default function Room() {
     );
   }
 
-  if (!token) {
+  if (!token || !serverUrl) {
     return (
       <div className="connecting-page">
         <div className="spinner" />
