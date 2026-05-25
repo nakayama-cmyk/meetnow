@@ -9,10 +9,26 @@ import DeviceSetup from '../components/DeviceSetup.jsx';
 import { useRecording } from '../hooks/useRecording.js';
 import { useTranscription } from '../hooks/useTranscription.js';
 
+// GitHub API から最新のサーバー URL を取得（ビルド不要でリアルタイム更新）
+async function fetchServerUrl() {
+  try {
+    const r = await fetch(
+      'https://api.github.com/repos/nakayama-cmyk/meetnow/contents/config.json',
+      { headers: { Accept: 'application/vnd.github.v3.raw' }, cache: 'no-store' }
+    );
+    if (r.ok) {
+      const cfg = await r.json();
+      if (cfg && cfg.wsUrl) return cfg.wsUrl;
+    }
+  } catch {}
+  // フォールバック: ビルド時の環境変数
+  return import.meta.env.VITE_LIVEKIT_HOST || null;
+}
+
 // ブラウザネイティブ Web Crypto API で LiveKit JWT を生成
 // livekit-server-sdk は Node.js 専用のため使用しない
 async function generateTokenClientSide(room, username) {
-  const host   = import.meta.env.VITE_LIVEKIT_HOST;
+  const host   = await fetchServerUrl();
   const key    = import.meta.env.VITE_LIVEKIT_API_KEY;
   const secret = import.meta.env.VITE_LIVEKIT_API_SECRET;
   if (!host || !key || !secret) return null;

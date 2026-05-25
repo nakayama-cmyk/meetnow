@@ -6,3 +6,4 @@ dist/
 livekit
 livekit.exe
 livekit.yaml
+.gh-token
