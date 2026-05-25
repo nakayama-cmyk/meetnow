@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
+import { AccessToken } from 'livekit-server-sdk';
 import VideoGrid from '../components/VideoGrid.jsx';
 import ControlBar from '../components/ControlBar.jsx';
 import ChatPanel from '../components/ChatPanel.jsx';
@@ -8,6 +9,20 @@ import TranscriptPanel from '../components/TranscriptPanel.jsx';
 import DeviceSetup from '../components/DeviceSetup.jsx';
 import { useRecording } from '../hooks/useRecording.js';
 import { useTranscription } from '../hooks/useTranscription.js';
+
+// クライアント側でトークンを生成（VITE_LIVEKIT_* が設定されている場合）
+async function generateTokenClientSide(room, username) {
+  const host   = import.meta.env.VITE_LIVEKIT_HOST;
+  const key    = import.meta.env.VITE_LIVEKIT_API_KEY;
+  const secret = import.meta.env.VITE_LIVEKIT_API_SECRET;
+  if (!host || !key || !secret) return null;
+
+  const identity = `${username}_${Date.now()}`;
+  const at = new AccessToken(key, secret, { identity, name: username, ttl: '4h' });
+  at.addGrant({ roomJoin: true, room, canPublish: true, canSubscribe: true, canPublishData: true });
+  const jwt = await at.toJwt();
+  return { token: jwt, url: host };
+}
 
 function RoomContent({ roomId }) {
   const navigate = useNavigate();
@@ -58,18 +73,30 @@ export default function Room() {
 
   useEffect(() => {
     if (!roomId) return navigate('/');
-    fetch(`${import.meta.env.VITE_API_URL || ''}/api/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: roomId, username: userName }),
-    })
-      .then(r => r.json())
-      .then(d => {
+
+    (async () => {
+      try {
+        // まずクライアント側生成を試みる（GitHub Pages + ローカルサーバー用）
+        const clientResult = await generateTokenClientSide(roomId, userName);
+        if (clientResult) {
+          setToken(clientResult.token);
+          setServerUrl(clientResult.url);
+          return;
+        }
+        // フォールバック: サーバー API
+        const r = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ room: roomId, username: userName }),
+        });
+        const d = await r.json();
         if (d.error) throw new Error(d.error);
         setToken(d.token);
         setServerUrl(d.url);
-      })
-      .catch(e => setError(e.message));
+      } catch (e) {
+        setError(e.message);
+      }
+    })();
   }, [roomId]);
 
   if (error) {
