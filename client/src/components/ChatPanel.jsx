@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDataChannel, useLocalParticipant } from '@livekit/components-react';
 
-export default function ChatPanel({ onClose }) {
+export default function ChatPanel({ onClose, visible }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
@@ -37,7 +37,7 @@ export default function ChatPanel({ onClose }) {
   };
 
   return (
-    <div className="side-panel">
+    <div className="side-panel" style={{ display: visible ? 'flex' : 'none' }}>
       <div className="panel-header">
         <h3>チャット</h3>
         <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>

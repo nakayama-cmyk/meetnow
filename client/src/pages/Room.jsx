@@ -85,7 +85,7 @@ function RoomContent({ roomId }) {
         <div className="main-area">
           <VideoGrid />
         </div>
-        {showChat && <ChatPanel onClose={() => setShowChat(false)} />}
+        <ChatPanel onClose={() => setShowChat(false)} visible={showChat} />
         {showTranscript && (
           <TranscriptPanel
             transcripts={transcription.transcripts}
