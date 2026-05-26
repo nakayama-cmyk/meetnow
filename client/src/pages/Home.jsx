@@ -8,15 +8,36 @@ function generateRoomId() {
 }
 
 export default function Home() {
-  const [name, setName] = useState('');
-  const [roomId, setRoomId] = useState('');
+  const [name, setName]         = useState('');
+  const [roomId, setRoomId]     = useState('');
+  const [createdId, setCreatedId] = useState('');
+  const [copied, setCopied]     = useState(false);
   const navigate = useNavigate();
 
-  const go = (id) => {
+  const baseUrl = `${location.protocol}//${location.host}${location.pathname.replace(/\/$/, '')}`;
+
+  const createMeeting = () => {
+    const trimmed = name.trim();
+    if (!trimmed) return alert('名前を入力してください');
+    sessionStorage.setItem('userName', trimmed);
+    const id = generateRoomId();
+    setCreatedId(id);
+    setCopied(false);
+  };
+
+  const joinMeeting = (id) => {
     const trimmed = name.trim();
     if (!trimmed) return alert('名前を入力してください');
     sessionStorage.setItem('userName', trimmed);
     navigate(`/room/${id}`);
+  };
+
+  const copyLink = () => {
+    const link = `${baseUrl}#/room/${createdId}`;
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   return (
@@ -35,17 +56,35 @@ export default function Home() {
             placeholder="名前を入力"
             value={name}
             onChange={e => setName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && go(generateRoomId())}
+            onKeyDown={e => e.key === 'Enter' && createMeeting()}
             autoFocus
           />
         </div>
 
-        <button
-          className="btn btn-primary btn-full"
-          onClick={() => go(generateRoomId())}
-        >
-          新しい会議を開始
-        </button>
+        {!createdId ? (
+          <button className="btn btn-primary btn-full" onClick={createMeeting}>
+            新しい会議を開始
+          </button>
+        ) : (
+          <div className="meeting-link-box">
+            <p className="meeting-link-label">📎 参加リンク（コピーして共有）</p>
+            <div className="meeting-link-row">
+              <input
+                className="meeting-link-input"
+                readOnly
+                value={`${baseUrl}#/room/${createdId}`}
+                onFocus={e => e.target.select()}
+              />
+              <button className="btn btn-secondary" onClick={copyLink}>
+                {copied ? '✅ コピー済' : 'コピー'}
+              </button>
+            </div>
+            <button className="btn btn-primary btn-full" style={{ marginTop: 10 }} onClick={() => joinMeeting(createdId)}>
+              🚀 会議に参加する
+            </button>
+            <button className="btn-text" onClick={() => setCreatedId('')}>← 戻る</button>
+          </div>
+        )}
 
         <div className="divider"><span>または参加</span></div>
 
@@ -55,11 +94,11 @@ export default function Home() {
             placeholder="会議IDを入力"
             value={roomId}
             onChange={e => setRoomId(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && roomId.trim() && go(roomId.trim())}
+            onKeyDown={e => e.key === 'Enter' && roomId.trim() && joinMeeting(roomId.trim())}
           />
           <button
             className="btn btn-secondary"
-            onClick={() => roomId.trim() && go(roomId.trim())}
+            onClick={() => roomId.trim() && joinMeeting(roomId.trim())}
           >
             参加
           </button>

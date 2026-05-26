@@ -126,6 +126,45 @@ input[type="text"]::placeholder { color: var(--text2); }
 }
 .join-row input { flex: 1; }
 
+.meeting-link-box {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.meeting-link-label {
+  font-size: 13px;
+  color: #a0aec0;
+  margin: 0;
+}
+.meeting-link-row {
+  display: flex;
+  gap: 8px;
+}
+.meeting-link-input {
+  flex: 1;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.3);
+  color: #e2e8f0;
+  cursor: text;
+}
+.btn-text {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: center;
+}
+.btn-text:hover { color: #e2e8f0; }
+
 .features {
   display: flex;
   flex-wrap: wrap;
