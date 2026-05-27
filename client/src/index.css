@@ -357,10 +357,22 @@ input[type="text"]::placeholder { color: var(--text2); }
 
 .ctrl-badge {
   position: absolute;
-  top: 4px;
-  right: 8px;
+  top: 2px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--danger);
+  color: #fff;
   font-size: 10px;
-  color: var(--danger);
+  font-weight: bold;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+/* 録画バッジ (●) は点滅 */
+.ctrl-btn[data-recording] .ctrl-badge {
   animation: blink 1s infinite;
 }
 @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }

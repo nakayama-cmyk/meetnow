@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
 import { useLocalParticipant } from '@livekit/components-react';
 
-function IconBtn({ label, active, danger, onClick, children, badge }) {
+function IconBtn({ label, active, danger, onClick, children, badge, isRecording }) {
   return (
     <button
       className={`ctrl-btn${active ? ' active' : ''}${danger ? ' danger' : ''}`}
       onClick={onClick}
       title={label}
+      data-recording={isRecording || undefined}
     >
       <span className="ctrl-icon">{children}</span>
       {badge && <span className="ctrl-badge">{badge}</span>}
@@ -20,6 +21,7 @@ export default function ControlBar({
   onLeave,
   showChat,
   onToggleChat,
+  chatBadge,
   showTranscript,
   onToggleTranscript,
   recording,
@@ -100,6 +102,7 @@ export default function ControlBar({
           active={recording.isRecording}
           onClick={recording.isRecording ? recording.stop : recording.start}
           badge={recording.isRecording ? '●' : null}
+          isRecording={recording.isRecording}
         >
           ⏺
         </IconBtn>
@@ -116,6 +119,7 @@ export default function ControlBar({
           label="チャット"
           active={showChat}
           onClick={onToggleChat}
+          badge={chatBadge || null}
         >
           💬
         </IconBtn>

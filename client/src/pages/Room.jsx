@@ -76,8 +76,34 @@ function RoomContent({ roomId }) {
   const navigate = useNavigate();
   const [showChat, setShowChat] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const recording = useRecording();
   const transcription = useTranscription();
+
+  // チャットを開いたら未読カウントをリセット
+  const handleToggleChat = () => {
+    setShowChat(v => {
+      if (!v) setUnreadCount(0);
+      return !v;
+    });
+  };
+
+  // 退出時: 録画中なら停止（自動DL）、文字起こしがあればDL
+  const handleLeave = () => {
+    if (recording.isRecording) recording.stop();
+    if (transcription.transcripts.length > 0) transcription.downloadTranscript();
+    navigate('/');
+  };
+
+  // ブラウザを閉じた場合も同様に処理
+  useEffect(() => {
+    const onUnload = () => {
+      if (recording.isRecording) recording.stop();
+      if (transcription.transcripts.length > 0) transcription.downloadTranscript();
+    };
+    window.addEventListener('beforeunload', onUnload);
+    return () => window.removeEventListener('beforeunload', onUnload);
+  }, [recording, transcription]);
 
   return (
     <div className="room-wrapper">
@@ -85,7 +111,11 @@ function RoomContent({ roomId }) {
         <div className="main-area">
           <VideoGrid />
         </div>
-        <ChatPanel onClose={() => setShowChat(false)} visible={showChat} />
+        <ChatPanel
+          onClose={() => setShowChat(false)}
+          visible={showChat}
+          onNewMessage={() => setUnreadCount(c => c + 1)}
+        />
         {showTranscript && (
           <TranscriptPanel
             transcripts={transcription.transcripts}
@@ -98,9 +128,10 @@ function RoomContent({ roomId }) {
       </div>
       <ControlBar
         roomId={roomId}
-        onLeave={() => navigate('/')}
+        onLeave={handleLeave}
         showChat={showChat}
-        onToggleChat={() => setShowChat(v => !v)}
+        onToggleChat={handleToggleChat}
+        chatBadge={unreadCount > 0 ? unreadCount : null}
         showTranscript={showTranscript}
         onToggleTranscript={() => setShowTranscript(v => !v)}
         recording={recording}

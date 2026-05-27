@@ -1,16 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDataChannel, useLocalParticipant } from '@livekit/components-react';
 
-export default function ChatPanel({ onClose, visible }) {
+export default function ChatPanel({ onClose, visible, onNewMessage }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
   const { localParticipant } = useLocalParticipant();
+  const visibleRef = useRef(visible);
+  useEffect(() => { visibleRef.current = visible; }, [visible]);
 
   const { send } = useDataChannel('chat', (msg) => {
     try {
       const data = JSON.parse(new TextDecoder().decode(msg.payload));
       setMessages(prev => [...prev, { ...data, id: Math.random() }]);
+      if (!visibleRef.current) onNewMessage?.();
     } catch {}
   });
 
